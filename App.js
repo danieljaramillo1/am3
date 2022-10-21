@@ -11,16 +11,24 @@ import {useForm, Controller} from 'react-hook-form';
 {/* pantalla de logeo*/}
 function HomeScreen ({navigation}){
 
+  const [user, setUser] = useState("");
   const [roll, setRoll] =useState('usr');
   
+ const burned = [{user: "daniel" , password : "a123", roll: "adm" },{user: "Jara" , password : "a123", roll: "user" }, ];
+
+ const Verifications = (data) => {
+  const user = burned.filter(obj=>obj.user === data.user && obj.password === data.password && obj.roll === "adm")[0]
+  console.log(user)
+  if(user){navigation.navigate("Cuentas", {user})}
+
+  };
   const {control, handleSubmit, formState: { errors }} = useForm({
     defaultValues:{
       user: "",
       password: "",
-      
+      adm: ""
     }
   });
- 
   return(
     <View style={styles.container}>
 
@@ -37,10 +45,12 @@ function HomeScreen ({navigation}){
         render ={({ field: { onChange, onBlur, value } }) => (
           <TextInput 
           style={[styles.inputstyle,
-            {borderColor: 
-              errors.user?.type == "required" || 
-              errors.user?.type == "pattern" ? "red" : "green",},
-            ]}
+            {borderColor:
+              errors.user?.type == "required" ||
+              errors.user?.type == "pattern"
+                ? "red"
+                : "green",
+          },]}       
           placeholder="User"
           onChange ={onChange}  
           onBlur={onBlur}
@@ -51,7 +61,34 @@ function HomeScreen ({navigation}){
 
         {errors.user?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>requerido</Text>)}
         {errors.user?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo letras y espacios</Text>)}
-            
+
+<Controller
+        control = {control}
+        name = "password"
+        rules = {{
+          required: true,
+          pattern: /^[0-9a-zA-ZùÙüÜäàáëèéïìíöòóüùúÄÀÁËÈÉÏÌÍÖÒÓÜÚñÑ]+$/,
+        }}
+        render ={({ field: { onChange, onBlur, value } }) => (
+          <TextInput 
+          style={[styles.inputstyle,
+            {borderColor:
+              errors.password?.type == "required" ||
+              errors.password?.type == "pattern"
+                ? "red"
+                : "green",
+          },]}       
+          placeholder="Password"
+          onChange ={onChange}  
+          onBlur={onBlur}
+          value={value}      
+          ></TextInput>
+        )}
+        ></Controller>
+
+        {errors.password?.type == "required" && (<Text style ={{color:"red", fontWeight:600,}}>requerido</Text>)}
+        {errors.password?.type == "pattern" && (<Text style ={{color:"red", fontWeight:600,}}>No se admiten espacios</Text>)}
+
         <Picker
           selectedValue={roll}
           style={{ height: 40, width: 125,marginTop:15 }}
@@ -61,17 +98,18 @@ function HomeScreen ({navigation}){
         </Picker>
 
               
-        <TouchableOpacity style={styles.buttonstyle} onPress={()=>{
-          handleSubmit((data)=>console.log(data))}}><Text style={styles.subtitulos} >sign in</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.buttonstyle} onPress={handleSubmit(Verifications)}><Text style={styles.subtitulos} >sign in</Text></TouchableOpacity>
        
     </View>
   );
 }
 
-function CuentasScreen() {
+function CuentasScreen(props) {
+  console.log(props)
+  const { user } = props.route.params;
   return (
     <View style={styles.container}>
-      <Text>Cuentas</Text>
+      <Text>Bienvenido {user.user}</Text>
     </View>
   );
 }
