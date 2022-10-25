@@ -14,12 +14,13 @@ function HomeScreen ({navigation}){
   const [user, setUser] = useState("");
   const [roll, setRoll] =useState('usr');
   
- const burned = [{user: "daniel" , password : "a123", roll: "adm" },{user: "Jara" , password : "a123", roll: "user" }, ];
+ const burned = [{user: "Daniel" , password : "a123", roll: "adm" },{user: "Jara" , password : "a123", roll: "user" }, ];
 
  const Verifications = (data) => {
   const user = burned.filter(obj=>obj.user === data.user && obj.password === data.password && obj.roll === "adm")[0]
   console.log(user)
-  if(user){navigation.navigate("Cuentas", {user})}
+  if(user){navigation.navigate("Cuentas", {user})}else{alert("Debes ser un admin para ingresar")}
+
 
   };
   const {control, handleSubmit, formState: { errors }} = useForm({
@@ -104,13 +105,154 @@ function HomeScreen ({navigation}){
   );
 }
 
+{/*Genera numero aleatorio con maximo y minimo*/}
+function bigRandom(min,max){
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min);
+}
+
+
+
 function CuentasScreen(props) {
-  console.log(props)
+  console.log(props);
   const { user } = props.route.params;
+
+  const {control, handleSubmit, formState: { errors }} = useForm({
+    defaultValues:{
+      identificacion: "",
+      titular: "",
+      fecha: "",
+      saldo:"",
+    }
+  });
+
+
+  
   return (
     <View style={styles.container}>
-      <Text>Bienvenido {user.user}</Text>
+      <Text style={styles.subtitulo}>Bienvenido...... <Text style={styles.titulo}>{user.user}</Text> </Text>
+
+      <Text style={styles.subtitle}>Ingresa los datos</Text>
+      
+      
+
+      <Controller
+        control = {control}
+        name = "identificacion"
+        rules = {{
+          required: true,
+          pattern: /^[0-9]+$/,
+        }}
+        render ={({ field: { onChange, onBlur, value } }) => (
+          <TextInput 
+          style={[styles.inputstyle,
+            {borderColor:
+              errors.identificacion?.type == "required" ||
+              errors.identificacion?.type == "pattern"
+                ? "red"
+                : "green",
+          },]}       
+          placeholder="Identificacion"
+          onChange ={onChange}  
+          onBlur={onBlur}
+          value={value}      
+          ></TextInput>
+        )}
+        ></Controller>
+
+        {errors.identificacion?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>Campo requerido</Text>)}
+        {errors.identificacion?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo numeros admitidos</Text>)}
+
+        <Controller
+        control = {control}
+        name = "titular"
+        rules = {{
+          required: true,
+          pattern: /^([a-zA-ZùÙüÜäàáëèéïìíöòóüùúÄÀÁËÈÉÏÌÍÖÒÓÜÚñÑ\s]+)$/,
+        }}
+        render ={({ field: { onChange, onBlur, value } }) => (
+          <TextInput 
+          style={[styles.inputstyle,
+            {borderColor:
+              errors.titular?.type == "required" ||
+              errors.titular?.type == "pattern"
+                ? "red"
+                : "green",
+          },]}       
+          placeholder="Titular"
+          onChange ={onChange}  
+          onBlur={onBlur}
+          value={value}      
+          ></TextInput>
+        )}
+        ></Controller>
+
+        {errors.titular?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>Campo requerido</Text>)}
+        {errors.titular?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo se permiten letras y espacios</Text>)}
+
+        <Controller
+        control = {control}
+        name = "fecha"
+        rules = {{
+          required: true,
+          pattern: /^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\1\d{4}$/,
+        }}
+        render ={({ field: { onChange, onBlur, value } }) => (
+          <TextInput 
+          style={[styles.inputstyle,
+            {borderColor:
+              errors.fecha?.type == "required" ||
+              errors.fecha?.type == "pattern"
+                ? "red"
+                : "green",
+          },]}       
+          placeholder="dd-mm-aaaa"
+          onChange ={onChange}  
+          onBlur={onBlur}
+          value={value}      
+          ></TextInput>
+        )}
+        ></Controller>
+
+        {errors.fecha?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>Campo requerido</Text>)}
+        {errors.fecha?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>ingresa en el formato dd-mm-aaa</Text>)}
+        
+        <Controller
+        control = {control}
+        name = "saldo"
+        
+        rules = {{
+          required: true,
+          pattern: /^[1-9]?[0-9]{1}$|^100$/,
+          
+        }}
+        render ={({ field: { onChange, onBlur, value } }) => (
+          <TextInput 
+          style={[styles.inputstyle,
+            {borderColor:
+              errors.saldo?.type == "required" ||
+              errors.saldo?.type == "pattern"
+                ? "red"
+                : "green",
+          },]}       
+          placeholder="Identificacion"
+          onChange ={onChange}  
+          onBlur={onBlur}
+          value={value}      
+          ></TextInput>
+        )}
+        ></Controller>
+
+        {errors.saldo?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>Campo requerido</Text>)}
+        {errors.saldo?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo numeros entre 1m y 100m</Text>)}
+
+        <TouchableOpacity style={styles.buttonstyle} onPress={handleSubmit("Hola")}><Text style={styles.subtitulos} >sign in</Text></TouchableOpacity>
+        <Text style={styles.subtitulo}>Numero de Cuenta: {bigRandom(1000000000,10000000000)}</Text>
+
     </View>
+
+          
   );
 }
 
@@ -208,9 +350,15 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   subtitulos:{
-    fontSize:17,
+    fontSize:22,
     fontWeight:'bold',
     color:'white',
+  },
+  subtitle:{
+    fontSize:22,
+    fontWeight:'bold',
+    color:'red',
+    marginBottom:20,
   },
 
 });
