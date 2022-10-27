@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { useState, useEffect } from "react";
 import {useForm, Controller} from 'react-hook-form';
+import { render } from "react-dom";
 
 
 {/* pantalla de logeo*/}
@@ -115,8 +116,18 @@ function bigRandom(min,max){
 
 
 function CuentasScreen(props) {
-  console.log(props);
+  
+  
+
   const { user } = props.route.params;
+
+
+
+  const showValues  = (data) =>{
+    const lbls = [data.identificacion,data.titular,data.titular,data.fecha,];
+    return lbls
+  }; 
+
 
   const {control, handleSubmit, formState: { errors }} = useForm({
     defaultValues:{
@@ -126,6 +137,8 @@ function CuentasScreen(props) {
       saldo:"",
     }
   });
+
+
 
 
   
@@ -236,7 +249,7 @@ function CuentasScreen(props) {
                 ? "red"
                 : "green",
           },]}       
-          placeholder="Identificacion"
+          placeholder="Saldo"
           onChange ={onChange}  
           onBlur={onBlur}
           value={value}      
@@ -247,9 +260,24 @@ function CuentasScreen(props) {
         {errors.saldo?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>Campo requerido</Text>)}
         {errors.saldo?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo numeros entre 1m y 100m</Text>)}
 
-        <TouchableOpacity style={styles.buttonstyle} onPress={handleSubmit("Hola")}><Text style={styles.subtitulos} >sign in</Text></TouchableOpacity>
-        <Text style={styles.subtitulo}>Numero de Cuenta: {bigRandom(1000000000,10000000000)}</Text>
+        <TouchableOpacity style={styles.buttonstyle} onPress={handleSubmit(showValues)}><Text style={styles.subtitulos} >Nuevo Cliente</Text></TouchableOpacity>
+        
+        {lbls.map((word) => {
+            
+            return (
+              <Text key={word} style={{ marginTop: 20 }}>
+                {word}
+              </Text>
+            );
+          })}
 
+        <Text style={styles.subtitulo}>numero de cuenta: {bigRandom(10000000000,1000000000000)}</Text>
+        <Text style={styles.subtitulo}>identificacion:</Text>
+        <Text style={styles.subtitulo}>titular: </Text>
+        <Text style={styles.subtitulo}>fecha: </Text>
+        <Text style={styles.subtitulo}>saldo: </Text>
+ 
+          
     </View>
 
           
