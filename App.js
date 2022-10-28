@@ -122,9 +122,17 @@ function CuentasScreen(props) {
   const { user } = props.route.params;
 
 
-
+// const logs = []  
+const [lbls, setLbls] = useState({
+  identificacion: "",
+  titular: "",
+  fecha: "",
+  saldo:""
+})
   const showValues  = (data) =>{
-    const lbls = [data.identificacion,data.titular,data.titular,data.fecha,];
+    // const lbls = [data.identificacion,data.titular,data.titular,data.fecha,];
+    setLbls(data)
+    // logs.push(data)
     return lbls
   }; 
 
@@ -237,7 +245,7 @@ function CuentasScreen(props) {
         
         rules = {{
           required: true,
-          pattern: /^[1-9]?[0-9]{1}$|^100$/,
+          pattern: /^([1-9][0-9][0-9][0-9][0-9][0-9][0-9]|[1-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]|100000000)$/,
           
         }}
         render ={({ field: { onChange, onBlur, value } }) => (
@@ -258,24 +266,28 @@ function CuentasScreen(props) {
         ></Controller>
 
         {errors.saldo?.type == "required" && (<Text style ={{color:"red", fontWeight:800,}}>Campo requerido</Text>)}
-        {errors.saldo?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo numeros entre 1m y 100m</Text>)}
+        {errors.saldo?.type == "pattern" && (<Text style ={{color:"red", fontWeight:800,}}>Solo numeros entre 1m y 100</Text>)}
 
         <TouchableOpacity style={styles.buttonstyle} onPress={handleSubmit(showValues)}><Text style={styles.subtitulos} >Nuevo Cliente</Text></TouchableOpacity>
         
-        {lbls.map((word) => {
-            
-            return (
-              <Text key={word} style={{ marginTop: 20 }}>
-                {word}
-              </Text>
-            );
-          })}
-
+   
+        {
+          
+          !(errors.saldo && errors.fecha && errors.titular && errors.identificacion) ? (
+              <>
         <Text style={styles.subtitulo}>numero de cuenta: {bigRandom(10000000000,1000000000000)}</Text>
-        <Text style={styles.subtitulo}>identificacion:</Text>
-        <Text style={styles.subtitulo}>titular: </Text>
-        <Text style={styles.subtitulo}>fecha: </Text>
-        <Text style={styles.subtitulo}>saldo: </Text>
+        </>
+        ):
+        <Text>error</Text>
+        }
+            
+
+        <Text style={styles.subtitulo}>identificacion: {lbls.identificacion}</Text>
+        <Text style={styles.subtitulo}>titular: {lbls.titular}</Text>
+        <Text style={styles.subtitulo}>fecha: {lbls.fecha}</Text>
+        <Text style={styles.subtitulo}>saldo: {lbls.saldo}m</Text>
+       
+
  
           
     </View>
